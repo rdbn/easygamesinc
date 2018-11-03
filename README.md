@@ -1,3 +1,1 @@
-wiki_game
-=========
 # easygamesinc
