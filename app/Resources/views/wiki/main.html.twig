@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-12">
+            {{ form_start(form) }}
+                <div class="input-group">
+                    {{ form_widget(form.text, {'attr': {'class': 'form-control', 'placeholder': 'Search for...'}}) }}
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">Go</button>
+                    </span>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    {% for article in articles %}
+        <div class="row">
+            <div class="col-lg-12">
+                <h3>
+                    <a href="{{ path('app.wiki.article', {'articleId': article.id}) }}">{{ article.title }}</a>
+                </h3>
+                <p>{{ article.createdAt.format('Y-m-d H:i:s') }}</p>
+            </div>
+        </div>
+    {% endfor %}
+
+    {% set page = app.request.query.get('page', 1) %}
+    {% set limit = app.request.query.get('limit', 20) %}
+    {% set text = app.request.query.get('text', '') %}
+    {% set length = articles|length %}
+
+    {% if page > 1 or limit == length %}
+        <nav>
+            <ul class="pager">
+                {% if page > 1 %}
+                    {% set previousPage = page - 1 %}
+                    <li><a href="{{ path('app.wiki.main', {'text': text, 'page': previousPage, 'limit': limit}) }}">Previous</a></li>
+                {% endif %}
+
+                {% if limit != length %}
+                    {% set nextPage = page + 1 %}
+                    <li><a href="{{ path('app.wiki.main', {'text': text, 'page': nextPage, 'limit': limit}) }}">Next</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% endblock %}

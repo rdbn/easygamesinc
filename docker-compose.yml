@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx
+    volumes:
+      - ./app/docker/nginx:/etc/nginx/conf.d
+      - ./:/var/www/wiki
+    ports:
+      - 80:80
+    environment:
+       - NGINX_HOST=wiki.loc
+       - NGINX_PORT=80
+
+  php:
+    build:
+      context: app/docker/php
+      args:
+        TIMEZONE: Europe/Moscow
+    volumes:
+      - ./:/var/www/wiki
+
+  mysql:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: wiki
+      MYSQL_USER: wiki
+      MYSQL_PASSWORD: wiki
+      MYSQL_ROOT_PASSWORD: root
