@@ -34,7 +34,7 @@ class CreateAdminCommand extends ContainerAwareCommand
         $user
             ->setUsername('admin')
             ->setPassword($encoder->encodePassword($user, 'lWhEXFcl'))
-            ->setRoles(User::ROLE_USER['Admin']);
+            ->setRole(User::ROLE_USER['Admin']);
 
         try {
             $em->persist($user);
