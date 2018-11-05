@@ -8,6 +8,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -42,9 +43,16 @@ class Category
      */
     private $createdAt;
 
+    /**
+     * @var ArrayCollection|Wiki[]
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Wiki", mappedBy="category")
+     */
+    private $wiki;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
+        $this->wiki = new ArrayCollection();
     }
 
     /**
@@ -116,6 +124,40 @@ class Category
     public function setCreatedAt($createdAt): Category
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Wiki[]|ArrayCollection
+     */
+    public function getWiki()
+    {
+        return $this->wiki;
+    }
+
+    /**
+     * @param Wiki $wiki
+     * @return Category
+     */
+    public function addWiki(Wiki $wiki): Category
+    {
+        if (!$this->wiki->contains($wiki)) {
+            $this->wiki->add($wiki);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Wiki $wiki
+     * @return Category
+     */
+    public function removeWiki(Wiki $wiki): Category
+    {
+        if ($this->wiki->contains($wiki)) {
+            $this->wiki->remove($wiki);
+        }
 
         return $this;
     }

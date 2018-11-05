@@ -3,7 +3,9 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Category;
+use AppBundle\Entity\Comment;
 use AppBundle\Entity\Wiki;
+use AppBundle\Form\CommentFormType;
 use AppBundle\Form\SearchWikiFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,20 +46,42 @@ class WikiController extends Controller
 
     /**
      * @Route("/article/{articleId}", name="app.wiki.article")
+     * @param Request $request
      * @param $articleId
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function articleAction($articleId)
+    public function articleAction(Request $request, $articleId)
     {
-        $article = $this->getDoctrine()->getRepository(Wiki::class)
+        $em = $this->getDoctrine()->getManager();
+        $article = $em->getRepository(Wiki::class)
             ->findOneBy(['id' => $articleId]);
 
         if (!$article) {
             $this->createNotFoundException();
         }
 
+        $comment = new Comment();
+        $comment->setWiki($article);
+        $comment->setUser($this->getUser());
+        $form = $this->createForm(CommentFormType::class, $comment, [
+            'action' => $this->generateUrl('app.wiki.article', ['articleId' => $articleId])
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($comment);
+            $em->flush();
+
+            return $this->redirectToRoute('app.wiki.article', ['articleId' => $articleId]);
+        }
+
+        $comments = $em->getRepository(Comment::class)
+            ->findBy(['wiki' => $article]);
+
         return $this->render('wiki/article.html.twig', [
+            'form' => $form->createView(),
             'article' => $article,
+            'comments' => $comments,
         ]);
     }
 

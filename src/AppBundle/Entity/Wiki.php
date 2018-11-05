@@ -8,6 +8,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -27,7 +28,7 @@ class Wiki
     /**
      * @Assert\NotBlank()
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Category", inversedBy="")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Category", inversedBy="wiki")
      * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
      */
     private $category;
@@ -51,11 +52,18 @@ class Wiki
     private $createdAt;
 
     /**
+     * @var ArrayCollection|Comment[]
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Comment", mappedBy="wiki")
+     */
+    private $comments;
+
+    /**
      * Wiki constructor.
      */
     public function __construct()
     {
         $this->createdAt = new \DateTime();
+        $this->comments = new ArrayCollection();
     }
 
     /**
@@ -138,6 +146,40 @@ class Wiki
     public function setCreatedAt(\DateTime $createdAt): Wiki
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Comment[]|ArrayCollection
+     */
+    public function getComments()
+    {
+        return $this->comments;
+    }
+
+    /**
+     * @param Comment $comments
+     * @return Wiki
+     */
+    public function addComments(Comment $comments): Wiki
+    {
+        if (!$this->comments->contains($comments)) {
+            $this->comments->add($comments);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Comment $comments
+     * @return Wiki
+     */
+    public function removeComments($comments): Wiki
+    {
+        if ($this->comments->contains($comments)) {
+            $this->comments->remove($comments);
+        }
 
         return $this;
     }

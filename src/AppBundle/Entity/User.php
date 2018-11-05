@@ -8,6 +8,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -61,6 +62,12 @@ class User implements UserInterface
      * @var string
      */
     private $plainPassword;
+
+    /**
+     * @var ArrayCollection|Comment[]
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Comment", mappedBy="user")
+     */
+    private $comments;
 
     /**
      * User constructor.
@@ -202,6 +209,40 @@ class User implements UserInterface
     public function setPlainPassword(string $plainPassword)
     {
         $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
+
+    /**
+     * @return Comment[]|ArrayCollection
+     */
+    public function getComments()
+    {
+        return $this->comments;
+    }
+
+    /**
+     * @param Comment $comments
+     * @return User
+     */
+    public function addComments(Comment $comments): User
+    {
+        if (!$this->comments->contains($comments)) {
+            $this->comments->add($comments);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Comment $comments
+     * @return User
+     */
+    public function removeComments($comments): User
+    {
+        if ($this->comments->contains($comments)) {
+            $this->comments->remove($comments);
+        }
 
         return $this;
     }
