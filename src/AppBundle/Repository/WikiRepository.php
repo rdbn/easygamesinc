@@ -13,18 +13,26 @@ use Doctrine\ORM\EntityRepository;
 class WikiRepository extends EntityRepository
 {
     /**
+     * @param $categoryId
      * @param $text
      * @param $page
      * @param $limit
      * @return array
      */
-    public function findWikiByText($text, $page, $limit)
+    public function findWikiByText($categoryId, $text, $page, $limit)
     {
         $qb = $this->createQueryBuilder('w');
         $qb
             ->orderBy('w.createdAt', 'DESC')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit);
+
+        if ($categoryId) {
+            $qb
+                ->leftJoin('w.category', 'c')
+                ->andWhere($qb->expr()->eq('c.id', ':categoryId'))
+                ->setParameter('categoryId', $categoryId);
+        }
 
         if ($text) {
             $qb

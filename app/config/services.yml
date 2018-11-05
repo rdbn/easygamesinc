@@ -47,3 +47,10 @@ services:
         tags:
             - { name: sonata.admin, manager_type: orm, label: Users, show_mosaic_button: false }
         public: true
+
+    app.admin.cateogrty:
+        class: AppBundle\Admin\CategoryAdmin
+        arguments: [~, AppBundle\Entity\Category, ~]
+        tags:
+        - { name: sonata.admin, manager_type: orm, label: Category, show_mosaic_button: false }
+        public: true
