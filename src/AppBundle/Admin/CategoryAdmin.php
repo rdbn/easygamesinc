@@ -17,8 +17,8 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class CategoryAdmin extends AbstractAdmin
 {
-    protected $baseRouteName = 'sonata_wiki';
-    protected $baseRoutePattern = 'wiki';
+    protected $baseRouteName = 'sonata_category';
+    protected $baseRoutePattern = 'category';
 
     /**
      * @var array
