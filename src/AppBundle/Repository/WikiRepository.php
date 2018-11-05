@@ -23,7 +23,7 @@ class WikiRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('w');
         $qb
-            ->orderBy('w.createdAt', 'DESC')
+            ->orderBy('w.title', 'ASC')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit);
 
