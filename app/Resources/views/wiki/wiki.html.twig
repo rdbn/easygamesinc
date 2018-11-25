@@ -73,7 +73,7 @@
 
                 if (elementPosition <= scrollPosition && elementsNotRead.length > 0) {
                     $.ajax({
-                        url: '/app_dev.php/comment/check/' + elementCommentList.attr('data-wiki'),
+                        url: '/comment/check/' + elementCommentList.attr('data-wiki'),
                         statusCode: {
                             200: function() {
                                 elementsNotRead.each(function (index, value) {
