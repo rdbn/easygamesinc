@@ -52,8 +52,12 @@ class WikiAdmin extends AbstractAdmin
             ->addModelTransformer(new CallbackTransformer(function () use ($parent) {
                 return $parent;
             }, function ($wiki) {
-                /** @var Wiki $wiki */
-                return $wiki->getId();
+                if ($wiki instanceof Wiki) {
+                    /** @var Wiki $wiki */
+                    return $wiki->getId();
+                }
+
+                return 0;
             }));
     }
 
@@ -78,6 +82,12 @@ class WikiAdmin extends AbstractAdmin
             ->add('parent')
             ->add('createdAt', 'date', [
                 'format' => 'Y-m-d H:i:s',
+            ])
+            ->add('_action', null, [
+                'actions' => [
+                    'edit' => [],
+                    'delete' => [],
+                ],
             ]);
     }
 
