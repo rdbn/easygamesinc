@@ -26,12 +26,9 @@ class Wiki
     private $id;
 
     /**
-     * @Assert\NotBlank()
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Category", inversedBy="wiki")
-     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     * @ORM\Column(name="parent_id", type="integer", options={"DEFAULT": 0})
      */
-    private $category;
+    private $parent = 0;
 
     /**
      * @Assert\NotBlank()
@@ -75,20 +72,20 @@ class Wiki
     }
 
     /**
-     * @return Category
+     * @return int
      */
-    public function getCategory()
+    public function getParent()
     {
-        return $this->category;
+        return $this->parent;
     }
 
     /**
-     * @param Category $category
+     * @param mixed $parent
      * @return Wiki
      */
-    public function setCategory(Category $category): Wiki
+    public function setParent($parent): Wiki
     {
-        $this->category = $category;
+        $this->parent = $parent;
 
         return $this;
     }

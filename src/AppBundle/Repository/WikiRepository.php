@@ -8,31 +8,23 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\Wiki;
 use Doctrine\ORM\EntityRepository;
 
 class WikiRepository extends EntityRepository
 {
     /**
-     * @param $categoryId
      * @param $text
-     * @param $page
-     * @param $limit
-     * @return array
+     * @return Wiki[]
      */
-    public function findWikiByText($categoryId, $text, $page, $limit)
+    public function findWikiByText($text)
     {
         $qb = $this->createQueryBuilder('w');
         $qb
             ->orderBy('w.title', 'ASC')
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit);
-
-        if ($categoryId) {
-            $qb
-                ->leftJoin('w.category', 'c')
-                ->andWhere($qb->expr()->eq('c.id', ':categoryId'))
-                ->setParameter('categoryId', $categoryId);
-        }
+            ->orderBy('w.title', 'ASC')
+            ->addOrderBy('w.parent', 'ASC')
+        ;
 
         if ($text) {
             $qb

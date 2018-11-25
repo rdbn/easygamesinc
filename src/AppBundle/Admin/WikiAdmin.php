@@ -8,13 +8,14 @@
 
 namespace AppBundle\Admin;
 
-use AppBundle\Entity\Category;
+use AppBundle\Entity\Wiki;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\CallbackTransformer;
 
 class WikiAdmin extends AbstractAdmin
 {
@@ -33,13 +34,27 @@ class WikiAdmin extends AbstractAdmin
      */
     protected function configureFormFields(FormMapper $form)
     {
+        $parent = $this->getConfigurationPool()->getContainer()->get('doctrine.orm.entity_manager')
+            ->getRepository(Wiki::class)
+            ->findOneBy(['id' => $this->getSubject()->getParent()]);
+
         $form
-            ->add('category', EntityType::class, [
-                'class' => Category::class,
-                'choice_label' => 'name',
+            ->add('parent', EntityType::class, [
+                'class' => Wiki::class,
+                'choice_label' => 'title',
+                'required' => false,
             ])
             ->add('title', 'text')
             ->add('text', CKEditorType::class);
+
+        $form
+            ->get('parent')
+            ->addModelTransformer(new CallbackTransformer(function () use ($parent) {
+                return $parent;
+            }, function ($wiki) {
+                /** @var Wiki $wiki */
+                return $wiki->getId();
+            }));
     }
 
     /**
@@ -48,7 +63,6 @@ class WikiAdmin extends AbstractAdmin
     protected function configureDatagridFilters(DatagridMapper $filter)
     {
         $filter
-            ->add('category')
             ->add('title')
             ->add('text');
     }
@@ -60,10 +74,39 @@ class WikiAdmin extends AbstractAdmin
     {
         $list
             ->addIdentifier('id')
-            ->add('category.name')
             ->add('title')
+            ->add('parent')
             ->add('createdAt', 'date', [
                 'format' => 'Y-m-d H:i:s',
             ]);
+    }
+
+    /**
+     * @param Wiki $object
+     */
+    public function prePersist($object)
+    {
+        if (is_null($object->getParent())) {
+            $object->setParent(0);
+        }
+
+        if ($object->getParent() instanceof Wiki) {
+            $object->setParent($object->getParent()->getId());
+        }
+    }
+
+
+    /**
+     * @param Wiki $object
+     */
+    public function preUpdate($object)
+    {
+        if (is_null($object->getParent())) {
+            $object->setParent(0);
+        }
+
+        if ($object->getParent() instanceof Wiki) {
+            $object->setParent($object->getParent()->getId());
+        }
     }
 }

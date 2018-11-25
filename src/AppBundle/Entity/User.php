@@ -59,6 +59,12 @@ class User implements UserInterface
     private $createdAt;
 
     /**
+     * @var array
+     * @ORM\Column(name="check_comments", type="text")
+     */
+    private $checkComments = '';
+
+    /**
      * @var string
      */
     private $plainPassword;
@@ -243,6 +249,25 @@ class User implements UserInterface
         if ($this->comments->contains($comments)) {
             $this->comments->remove($comments);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCheckComments(): ?array
+    {
+        return json_decode($this->checkComments, 1);
+    }
+
+    /**
+     * @param array $checkComments
+     * @return User
+     */
+    public function setCheckComments(array $checkComments): User
+    {
+        $this->checkComments = json_encode($checkComments);
 
         return $this;
     }

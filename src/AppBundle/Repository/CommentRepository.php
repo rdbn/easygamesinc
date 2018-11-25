@@ -10,16 +10,17 @@ namespace AppBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-class CategoryRepository extends EntityRepository
+class CommentRepository extends EntityRepository
 {
     /**
+     * @param array $ids
      * @return array
      */
-    public function findCategoriesByGroupSubCategory(): array
+    public function findCommentById(array $ids): array
     {
         $qb = $this->createQueryBuilder('c');
         $qb
-            ->orderBy( 'c.groupId', 'ASC');
+            ->where($qb->expr()->in('c.id', $ids));
 
         return $qb->getQuery()->getResult();
     }

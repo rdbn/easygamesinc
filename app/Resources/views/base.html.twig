@@ -29,24 +29,32 @@
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
-        <div class="container">
+        <div class="container bottom20">
             <div class="row">
-                <div class="col-lg-12">
-                    <h2><a href="{{ path('app.wiki.main') }}"> Wiki game.</a></h2>
+                <div class="col-lg-10">
+                    <h2><a href="{{ path('app.wiki.main') }}">Wiki game.</a></h2>
+                </div>
+                <div class="col-lg-2">
+                    <h4><a href="{{ path('app.user.comments') }}">Личный кабинет</a></h4>
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-2">
-                    {{ render(controller('AppBundle\\Controller\\WikiController::categoryAction')) }}
-                </div>
-                <div class="col-lg-10">
+                <div class="col-lg-12">
                     {% block body %}{% endblock %}
                 </div>
             </div>
         </div>
 
+        <footer class="footer">
+            <div class="container">
+                <p class="text-muted top20">Wiki game.</p>
+            </div>
+        </footer>
+
         <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
         <script src="{{ asset('bundles/app/js/ie10-viewport-bug-workaround.js') }}"></script>
+        <script src="{{ asset('bundles/app/js/jquery.min.js') }}"></script>
+        <script src="{{ asset('bundles/app/js/bootstrap.min.js') }}"></script>
         {% block javascripts %}{% endblock %}
     </body>
 </html>

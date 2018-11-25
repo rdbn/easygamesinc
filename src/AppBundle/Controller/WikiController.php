@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\Category;
 use AppBundle\Entity\Comment;
 use AppBundle\Entity\Wiki;
 use AppBundle\Form\CommentFormType;
@@ -15,15 +14,11 @@ class WikiController extends Controller
 {
     /**
      * @Route("/", name="app.wiki.main")
-     * @Route("/{categoryId}", requirements={"categoryId": "\d+"}, name="app.wiki.category")
      * @param Request $request
-     * @param null $categoryId
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function mainAction(Request $request, $categoryId = null)
+    public function mainAction(Request $request)
     {
-        $page = $request->query->get('page', 1);
-        $limit = $request->query->get('limit', 20);
         $text = $request->query->get('text', '');
 
         $form = $this->createForm(SearchWikiFormType::class, null, [
@@ -35,36 +30,47 @@ class WikiController extends Controller
             $text = $form->get('text')->getData();
         }
 
-        $articles = $this->getDoctrine()->getRepository(Wiki::class)
-            ->findWikiByText($categoryId, $text, $page, $limit);
+        $wikis = $this->getDoctrine()->getRepository(Wiki::class)
+            ->findWikiByText($text);
+
+        $listWiki = [];
+        $refWiki = [];
+        foreach ($wikis as $wiki) {
+            if ($wiki->getParent() == 0) {
+                $listWiki[$wiki->getId()] = $wiki;
+            } else {
+                $refWiki[$wiki->getParent()][] = $wiki;
+            }
+        }
 
         return $this->render('wiki/main.html.twig', [
             'form' => $form->createView(),
-            'articles' => $articles,
+            'listWiki' => $listWiki,
+            'refWiki' => $refWiki,
         ]);
     }
 
     /**
-     * @Route("/article/{articleId}", name="app.wiki.article")
+     * @Route("/wiki/{wikiId}", name="app.wiki.wiki")
      * @param Request $request
-     * @param $articleId
+     * @param $wikiId
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function articleAction(Request $request, $articleId)
+    public function wikiAction(Request $request, $wikiId)
     {
         $em = $this->getDoctrine()->getManager();
-        $article = $em->getRepository(Wiki::class)
-            ->findOneBy(['id' => $articleId]);
+        $wiki = $em->getRepository(Wiki::class)
+            ->findOneBy(['id' => $wikiId]);
 
-        if (!$article) {
+        if (!$wiki) {
             $this->createNotFoundException();
         }
 
         $comment = new Comment();
-        $comment->setWiki($article);
+        $comment->setWiki($wiki);
         $comment->setUser($this->getUser());
         $form = $this->createForm(CommentFormType::class, $comment, [
-            'action' => $this->generateUrl('app.wiki.article', ['articleId' => $articleId])
+            'action' => $this->generateUrl('app.wiki.wiki', ['wikiId' => $wikiId])
         ]);
         $form->handleRequest($request);
 
@@ -72,26 +78,16 @@ class WikiController extends Controller
             $em->persist($comment);
             $em->flush();
 
-            return $this->redirectToRoute('app.wiki.article', ['articleId' => $articleId]);
+            return $this->redirectToRoute('app.wiki.wiki', ['wikiId' => $wikiId]);
         }
 
         $comments = $em->getRepository(Comment::class)
-            ->findBy(['wiki' => $article]);
+            ->findBy(['wiki' => $wiki]);
 
-        return $this->render('wiki/article.html.twig', [
+        return $this->render('wiki/wiki.html.twig', [
             'form' => $form->createView(),
-            'article' => $article,
+            'wiki' => $wiki,
             'comments' => $comments,
-        ]);
-    }
-
-    public function categoryAction()
-    {
-        $categories = $this->getDoctrine()->getRepository(Category::class)
-            ->findCategoriesByGroupSubCategory();
-
-        return $this->render("wiki/category.html.twig", [
-            'categories' => $categories,
         ]);
     }
 }
