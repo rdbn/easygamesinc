@@ -29,28 +29,7 @@
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-11">
-                    <h2><a href="{{ path('app.wiki.main') }}">Wiki game.</a></h2>
-                </div>
-                <div class="col-lg-1">
-                    <h3>
-                        <a href="{{ path('app.user.comments') }}">
-                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                            {{ app.user.username }}
-                        </a>
-                    </h3>
-                </div>
-            </div>
-        </div>
         {% block body %}{% endblock %}
-
-        <footer class="footer">
-            <div class="container-fluid">
-                <p class="text-muted top20">Wiki game.</p>
-            </div>
-        </footer>
 
         <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
         <script src="{{ asset('bundles/app/js/ie10-viewport-bug-workaround.js') }}"></script>

@@ -1,14 +1,8 @@
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-    position: relative;
+html, body {
     min-height: 100%;
-}
-body {
     color: rgb(255, 255, 255);
-    /* Margin bottom by footer height */
-    margin-bottom: 80px;
-    background-color: rgb(69, 69, 69);
+    margin: 0;
+    background-color: rgb(52, 52, 52);
 }
 .footer {
     position: absolute;
@@ -40,10 +34,6 @@ a:hover {
     margin-bottom: 20px;
 }
 
-.pull-right {
-    float: right !important;
-}
-
 .text-padding {
     padding: 5px;
 }
@@ -52,17 +42,13 @@ a:hover {
     display: none;
 }
 
+.text-background {
+    height: 100%;
+    background-color: rgb(69, 69, 69);
+}
+
 .list-comments-user {
     overflow: scroll;
     min-height: 400px;
     max-height: 800px;
-}
-
-.list-wiki-user {
-    overflow: scroll;
-}
-
-.list-wiki-user .list-wiki {
-    min-width: 260px;
-    max-width: 8000px;
 }

@@ -9,12 +9,11 @@
         <a href="{{ path('app.wiki.wiki', {'wikiId': wiki.id}) }}" class="">
             {{ wiki.title }}
         </a>
-        <p class="text-warning small">
-            Непрочитаных коментариев:
+        <p class="small">
             {% if listNotCheckComments[wiki.id] is defined %}
-                <span class="text-danger">{{ listNotCheckComments[wiki.id]|length }}</span>
+                ком: {{ listNotCheckComments[wiki.id]|length }}
             {% else %}
-                <span class="text-muted">0</span>
+                ком: <span class="text-muted">0</span>
             {% endif %}
         </p>
         {% if refWiki[wiki.id] is defined %}
@@ -30,15 +29,16 @@
 {% block body %}
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-2 list-wiki-user">
-                <ul class="media-list list-wiki">
+            <div class="col-lg-2">
+                <h2><a href="{{ path('app.wiki.main') }}"> Wiki TBR.</a></h2>
+                <ul class="media-list">
                     {% for wiki in listWiki %}
                         {{ _self.recursiveWiki(wiki, refWiki) }}
                     {% endfor %}
                 </ul>
             </div>
-            <div class="col-lg-7">
-                <div class="col-lg-12 text-background">
+            <div class="col-lg-7 text-background">
+                <div class="col-lg-12 top20">
                     <h3 class="top0">{% if wiki.title is defined %}{{ wiki.title }}{% endif %}</h3>
                     <p>{% if wiki.text is defined %}{{ wiki.text|raw }}{% endif %}</p>
                     {% if wiki.createdAt is defined %}
@@ -47,6 +47,12 @@
                 </div>
             </div>
             <div class="col-lg-3">
+                <h3 class="pull-right">
+                    <a href="{{ path('app.user.comments') }}">
+                        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                        {{ app.user.username }}
+                    </a>
+                </h3>
                 {% if comments|length > 0 %}
                     <div class="row comment-list" data-wiki="{{ wiki.id }}">
                         <div class="col-lg-12">
@@ -60,7 +66,7 @@
                             {% endif %}
                             {% for comment in comments %}
                                 <div class="media {% if comment.id in listNotCheckComments %}not-read{% endif %}">
-                                    <div class="media-body text-background text-padding">
+                                    <div class="media-body text-padding">
                                         <h4 class="media-heading">
                                             {{ comment.user.username }}
                                             {% if comment.id in listNotCheckComments %}
