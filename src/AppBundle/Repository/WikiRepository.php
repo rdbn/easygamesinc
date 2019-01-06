@@ -10,28 +10,50 @@ namespace AppBundle\Repository;
 
 use AppBundle\Entity\Wiki;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 
 class WikiRepository extends EntityRepository
 {
     /**
-     * @param $text
      * @return Wiki[]
      */
-    public function findWikiByText($text)
+    public function findAllWiki(): array
     {
         $qb = $this->createQueryBuilder('w');
         $qb
             ->orderBy('w.title', 'ASC')
             ->orderBy('w.title', 'ASC')
             ->addOrderBy('w.parent', 'ASC')
+            ->addOrderBy('w.title', 'ASC')
         ;
 
-        if ($text) {
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param null $wikiId
+     * @return Wiki
+     */
+    public function findOneWikiByDefaultOrWikiId($wikiId = null): ?Wiki
+    {
+        $qb = $this->createQueryBuilder('w');
+        if ($wikiId) {
             $qb
-                ->where($qb->expr()->like('w.text', ":text"))
-                ->setParameter('text', "%{$text}%");
+                ->andWhere('w.id = :wiki_id')
+                ->setParameter('wiki_id', $wikiId)
+            ;
+        } else {
+            $qb
+                ->andWhere('w.parent = 0')
+                ->orderBy('w.parent', 'ASC')
+                ->setMaxResults(1)
+            ;
         }
 
-        return $qb->getQuery()->getResult();
+        try {
+            return $qb->getQuery()->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+            return null;
+        }
     }
 }

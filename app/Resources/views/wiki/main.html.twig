@@ -2,10 +2,13 @@
 
 {% macro recursiveWiki(wiki, refWiki) %}
     {% set listNotCheckComments = app.user.checkComments %}
-    <li class="media">
-        <h4>
-            <a href="{{ path('app.wiki.wiki', {'wikiId': wiki.id}) }}">{{ wiki.title }}</a>
-        </h4>
+    <li class="media open-inner-wiki">
+        {% if refWiki[wiki.id] is defined %}
+            <span class="glyphicon glyphicon-plus small text-muted"></span>
+        {% endif %}
+        <a href="{{ path('app.wiki.wiki', {'wikiId': wiki.id}) }}" class="">
+            {{ wiki.title }}
+        </a>
         <p class="text-warning small">
             Непрочитаных коментариев:
             {% if listNotCheckComments[wiki.id] is defined %}
@@ -14,11 +17,8 @@
                 <span class="text-muted">0</span>
             {% endif %}
         </p>
-        <p class="text-muted small">
-            Дата публикации: {{ wiki.createdAt.format('Y-m-d H:i:s') }}
-        </p>
         {% if refWiki[wiki.id] is defined %}
-            <ul>
+            <ul class="inner-title-wiki">
                 {% for wiki in refWiki[wiki.id] %}
                     {{ _self.recursiveWiki(wiki, refWiki) }}
                 {% endfor %}
@@ -28,26 +28,94 @@
 {% endmacro %}
 
 {% block body %}
-    <div class="row top20">
-        <div class="col-lg-12">
-            {{ form_start(form) }}
-                <div class="input-group">
-                    {{ form_widget(form.text, {'attr': {'class': 'form-control', 'placeholder': 'Search for...'}}) }}
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="submit">Go</button>
-                    </span>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-2 list-wiki-user">
+                <ul class="media-list list-wiki">
+                    {% for wiki in listWiki %}
+                        {{ _self.recursiveWiki(wiki, refWiki) }}
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-lg-7">
+                <div class="col-lg-12 text-background">
+                    <h3>{% if wiki.title is defined %}{{ wiki.title }}{% endif %}</h3>
+                    <p>{% if wiki.text is defined %}{{ wiki.text|raw }}{% endif %}</p>
+                    {% if wiki.createdAt is defined %}
+                        <h6 class="text-muted">Дата публикации: {{ wiki.createdAt.format('Y-m-d H:i:s') }}</h6>
+                    {% endif %}
                 </div>
-            {{ form_end(form) }}
-        </div>
-    </div>
+            </div>
+            <div class="col-lg-3">
+                {% if comments|length > 0 %}
+                    <div class="row comment-list" data-wiki="{{ wiki.id }}">
+                        <div class="col-lg-12">
+                            <h3 class="text-warning top0">Коментарии:</h3>
+                        </div>
+                        <div class="col-lg-12 list-comments-user">
+                            {% if app.user.checkComments[wiki.id] is defined %}
+                                {% set listNotCheckComments = app.user.checkComments[wiki.id] %}
+                            {% else %}
+                                {% set listNotCheckComments = [] %}
+                            {% endif %}
+                            {% for comment in comments %}
+                                <div class="media {% if comment.id in listNotCheckComments %}not-read{% endif %}">
+                                    <div class="media-body text-background text-padding">
+                                        <h4 class="media-heading">
+                                            {{ comment.user.username }}
+                                            {% if comment.id in listNotCheckComments %}
+                                                <span class="small text-not-read">(Не прочитан)</span>
+                                            {% endif %}
+                                        </h4>
+                                        <p {% if comment.id in listNotCheckComments %}class="text-warning"{% endif %}>
+                                            {{ comment.text }}
+                                        </p>
+                                        <span class="text-muted">{{ comment.createdAt.format("Y-m-d H:i:s") }}</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
 
-    <div class="row top20">
-        <div class="col-lg-12">
-            <ul class="media-list">
-            {% for wiki in listWiki %}
-                {{ _self.recursiveWiki(wiki, refWiki) }}
-            {% endfor %}
-            </ul>
+                {% if form %}
+                    <div class="row top20">
+                        <div class="col-lg-12">
+                            <h3 class="text-warning">Оставить коментарий:</h3>
+                            {{ form_start(form) }}
+                            <div class="form-group">
+                                {{ form_widget(form.text, {"attr": {"class": "form-control", "rows": 3, "placeholder": "Текст коментария"}}) }}
+                            </div>
+                            {{ form_widget(form.submit, {"attr": {"class": "btn btn-default"}}) }}
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="application/javascript">
+        $(document).ready(function () {
+            $('.open-inner-wiki span').click(function () {
+                const element = $(this).parent().find('.inner-title-wiki');
+
+                if ($(element[0]).css('display') === 'block') {
+                    $(element[0]).css('display', 'none');
+
+                    $(this)
+                        .removeClass('glyphicon-minus')
+                        .addClass('glyphicon-plus');
+                } else {
+                    $(element[0]).css('display', 'block');
+
+                    $(this)
+                        .removeClass('glyphicon-plus')
+                        .addClass('glyphicon-minus')
+                }
+            });
+        });
+    </script>
 {% endblock %}

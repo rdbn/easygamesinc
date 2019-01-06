@@ -28,8 +28,10 @@ class UserController extends Controller
         $user = $this->getUser();
 
         $idsComments = [];
-        foreach ($user->getCheckComments() as $checkComment) {
-            $idsComments = array_merge($checkComment);
+        if ($user->getCheckComments()) {
+            foreach ($user->getCheckComments() as $checkComment) {
+                $idsComments = array_merge($checkComment);
+            }
         }
 
         if (count($idsComments) > 0) {

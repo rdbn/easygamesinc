@@ -20,6 +20,10 @@ body {
 
 /* Custom page CSS
 -------------------------------------------------- */
+.top0 {
+    margin-top: 0;
+}
+
 .top20 {
     margin-top: 20px;
 }
@@ -30,4 +34,32 @@ body {
 
 .pull-right {
     float: right !important;
+}
+
+.text-background {
+    background-color: #fff;
+    border-radius: 5px;
+}
+
+.text-padding {
+    padding: 5px;
+}
+
+.inner-title-wiki {
+    display: none;
+}
+
+.list-comments-user {
+    overflow: scroll;
+    min-height: 400px;
+    max-height: 800px;
+}
+
+.list-wiki-user {
+    overflow: scroll;
+}
+
+.list-wiki-user .list-wiki {
+    min-width: 260px;
+    max-width: 8000px;
 }
