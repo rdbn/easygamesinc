@@ -39,7 +39,7 @@
             </div>
             <div class="col-lg-7">
                 <div class="col-lg-12 text-background">
-                    <h3>{% if wiki.title is defined %}{{ wiki.title }}{% endif %}</h3>
+                    <h3 class="top0">{% if wiki.title is defined %}{{ wiki.title }}{% endif %}</h3>
                     <p>{% if wiki.text is defined %}{{ wiki.text|raw }}{% endif %}</p>
                     {% if wiki.createdAt is defined %}
                         <h6 class="text-muted">Дата публикации: {{ wiki.createdAt.format('Y-m-d H:i:s') }}</h6>
@@ -50,7 +50,7 @@
                 {% if comments|length > 0 %}
                     <div class="row comment-list" data-wiki="{{ wiki.id }}">
                         <div class="col-lg-12">
-                            <h3 class="text-warning top0">Коментарии:</h3>
+                            <h3 class="top0">Коментарии:</h3>
                         </div>
                         <div class="col-lg-12 list-comments-user">
                             {% if app.user.checkComments[wiki.id] is defined %}

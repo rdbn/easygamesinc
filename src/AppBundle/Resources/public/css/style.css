@@ -5,9 +5,10 @@ html {
     min-height: 100%;
 }
 body {
+    color: rgb(255, 255, 255);
     /* Margin bottom by footer height */
     margin-bottom: 80px;
-    background-color: #f5f5f5;
+    background-color: rgb(69, 69, 69);
 }
 .footer {
     position: absolute;
@@ -17,6 +18,13 @@ body {
     height: 60px;
 }
 
+h1, h2, h3, h4, h5, h6, a {
+    color: rgb(255, 175, 30);
+}
+
+a:hover {
+    color: rgb(255, 166, 0);
+}
 
 /* Custom page CSS
 -------------------------------------------------- */
@@ -34,11 +42,6 @@ body {
 
 .pull-right {
     float: right !important;
-}
-
-.text-background {
-    background-color: #fff;
-    border-radius: 5px;
 }
 
 .text-padding {
