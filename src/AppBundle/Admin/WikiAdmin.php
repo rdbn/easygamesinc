@@ -34,9 +34,14 @@ class WikiAdmin extends AbstractAdmin
      */
     protected function configureFormFields(FormMapper $form)
     {
-        $parent = $this->getConfigurationPool()->getContainer()->get('doctrine.orm.entity_manager')
-            ->getRepository(Wiki::class)
+        $em = $this->getConfigurationPool()->getContainer()->get('doctrine.orm.entity_manager');
+        /** @var Wiki $parent */
+        $parent = $em->getRepository(Wiki::class)
             ->findOneBy(['id' => $this->getSubject()->getParent()]);
+
+        /** @var Wiki $maxWeight */
+        $maxWeight = $em->getRepository(Wiki::class)
+            ->findOneBy([], ['weight' => 'DESC']);
 
         $form
             ->add('parent', EntityType::class, [
@@ -45,7 +50,10 @@ class WikiAdmin extends AbstractAdmin
                 'required' => false,
             ])
             ->add('title', 'text')
-            ->add('text', CKEditorType::class);
+            ->add('text', CKEditorType::class)
+            ->add('weight', 'text', [
+                'data' => $this->getSubject()->getId() ? $this->getSubject()->getWeight() : $maxWeight->getWeight() + 1,
+            ]);
 
         $form
             ->get('parent')
@@ -80,6 +88,7 @@ class WikiAdmin extends AbstractAdmin
             ->addIdentifier('id')
             ->add('title')
             ->add('parent')
+            ->add('weight')
             ->add('createdAt', 'date', [
                 'format' => 'Y-m-d H:i:s',
             ])

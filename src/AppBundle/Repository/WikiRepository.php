@@ -21,10 +21,7 @@ class WikiRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('w');
         $qb
-            ->orderBy('w.title', 'ASC')
-            ->orderBy('w.title', 'ASC')
-            ->addOrderBy('w.parent', 'ASC')
-            ->addOrderBy('w.title', 'ASC')
+            ->orderBy('w.weight', 'ASC')
         ;
 
         return $qb->getQuery()->getResult();

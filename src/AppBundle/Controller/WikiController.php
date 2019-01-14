@@ -45,7 +45,7 @@ class WikiController extends Controller
             }
 
             $comments = $em->getRepository(Comment::class)
-                ->findBy(['wiki' => $wiki]);
+                ->findBy(['wiki' => $wiki], ['createdAt' => 'DESC']);
         }
 
         return $this->render('wiki/main.html.twig', [

@@ -19,6 +19,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Wiki
 {
     /**
+     * @var int
+     *
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -26,21 +28,35 @@ class Wiki
     private $id;
 
     /**
+     * @var int
+     *
      * @ORM\Column(name="parent_id", type="integer", options={"DEFAULT": 0})
      */
     private $parent = 0;
 
     /**
+     * @var string
+     *
      * @Assert\NotBlank()
      * @ORM\Column(type="string", length=255)
      */
     private $title;
 
     /**
+     * @var string
+     *
      * @Assert\NotBlank()
      * @ORM\Column(type="text")
      */
     private $text;
+
+    /**
+     * @var int
+     *
+     * @Assert\NotBlank()
+     * @ORM\Column(type="integer")
+     */
+    private $weight = 0;
 
     /**
      * @var \DateTime
@@ -126,6 +142,22 @@ class Wiki
         $this->text = $text;
 
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWeight(): int
+    {
+        return $this->weight;
+    }
+
+    /**
+     * @param int $weight
+     */
+    public function setWeight(int $weight): void
+    {
+        $this->weight = $weight;
     }
 
     /**

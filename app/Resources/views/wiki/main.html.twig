@@ -1,20 +1,16 @@
 {% extends 'base.html.twig' %}
 
 {% macro recursiveWiki(wiki, refWiki) %}
-    {% set listNotCheckComments = app.user.checkComments %}
+    {% set wikiId = app.request.get('wikiId') %}
     <li class="media open-inner-wiki">
         {% if refWiki[wiki.id] is defined %}
             <span class="glyphicon glyphicon-plus small text-muted"></span>
         {% endif %}
-        <a href="{{ path('app.wiki.wiki', {'wikiId': wiki.id}) }}" class="">
+        <a href="{{ path('app.wiki.wiki', {'wikiId': wiki.id}) }}" {% if wiki.id == wikiId %}class="href-decoration"{% endif %}>
             {{ wiki.title }}
         </a>
         <p class="small">
-            {% if listNotCheckComments[wiki.id] is defined %}
-                ком: {{ listNotCheckComments[wiki.id]|length }}
-            {% else %}
-                ком: <span class="text-muted">0</span>
-            {% endif %}
+            ком: {{ wiki.comments.count }}
         </p>
         {% if refWiki[wiki.id] is defined %}
             <ul class="inner-title-wiki">
@@ -53,12 +49,27 @@
                         {{ app.user.username }}
                     </a>
                 </h3>
-                {% if comments|length > 0 %}
-                    <div class="row comment-list" data-wiki="{{ wiki.id }}">
-                        <div class="col-lg-12">
-                            <h3 class="top0">Коментарии:</h3>
-                        </div>
-                        <div class="col-lg-12 list-comments-user">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3>Оставить коментарий:</h3>
+                        {% if form %}
+                            {{ form_start(form) }}
+                            <div class="form-group">
+                                {{ form_widget(form.text, {"attr": {"class": "form-control", "rows": 3, "placeholder": "Текст коментария"}}) }}
+                            </div>
+                            {{ form_widget(form.submit, {"attr": {"class": "btn btn-default"}}) }}
+                            {{ form_end(form) }}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row top20" data-wiki="{{ wiki.id }}">
+                    <div class="col-lg-12">
+                        <h3 class="top0">Коментарии:</h3>
+                    </div>
+                    <div class="col-lg-12">
+                        {% if comments|length > 0 %}
                             {% if app.user.checkComments[wiki.id] is defined %}
                                 {% set listNotCheckComments = app.user.checkComments[wiki.id] %}
                             {% else %}
@@ -80,23 +91,9 @@
                                     </div>
                                 </div>
                             {% endfor %}
-                        </div>
+                        {% endif %}
                     </div>
-                {% endif %}
-
-                {% if form %}
-                    <div class="row top20">
-                        <div class="col-lg-12">
-                            <h3 class="text-warning">Оставить коментарий:</h3>
-                            {{ form_start(form) }}
-                            <div class="form-group">
-                                {{ form_widget(form.text, {"attr": {"class": "form-control", "rows": 3, "placeholder": "Текст коментария"}}) }}
-                            </div>
-                            {{ form_widget(form.submit, {"attr": {"class": "btn btn-default"}}) }}
-                            {{ form_end(form) }}
-                        </div>
-                    </div>
-                {% endif %}
+                </div>
             </div>
         </div>
     </div>
@@ -119,9 +116,21 @@
 
                     $(this)
                         .removeClass('glyphicon-plus')
-                        .addClass('glyphicon-minus')
+                        .addClass('glyphicon-minus');
                 }
             });
+
+            const currentWikiElement = $('.media-list .inner-title-wiki');
+            for (let i = 0; i < currentWikiElement.length; i++) {
+                if ($(currentWikiElement[i]).find('a.href-decoration').length > 0) {
+                    $(currentWikiElement[i]).css('display', 'block');
+
+                    const elementSpanParent = $(currentWikiElement[i]).parent().find('span.glyphicon');
+                    $(elementSpanParent[0])
+                        .removeClass('glyphicon-plus')
+                        .addClass('glyphicon-minus');
+                }
+            }
         });
     </script>
 {% endblock %}

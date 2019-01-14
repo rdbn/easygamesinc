@@ -51,8 +51,6 @@ a:active {
     background-color: rgb(69, 69, 69);
 }
 
-.list-comments-user {
-    overflow: scroll;
-    min-height: 400px;
-    max-height: 800px;
+.href-decoration {
+    text-decoration: underline;
 }
